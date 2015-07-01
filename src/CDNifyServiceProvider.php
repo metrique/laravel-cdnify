@@ -3,6 +3,8 @@
 namespace Metrique\CDNify;
 
 use Illuminate\Support\ServiceProvider;
+use Metrique\CDNify\Contracts\CDNifyRepositoryInterface;
+use Metrique\CDNify\CDNifyRepository;
 
 class CDNifyServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,12 @@ class CDNifyServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/Resources/config/cdnify.php' => config_path('cdnify.php'),
         ]);
+
+        // View composer
+        view()->composer(
+            '*',
+            'Metrique\CDNify\CDNifyViewComposer'
+        );
     }
 
     /**
@@ -26,7 +34,9 @@ class CDNifyServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // $this->app->singleton(
-        // );
+        $this->app->singleton(
+            CDNifyRepositoryInterface::class,
+            CDNifyRepository::class
+        );
     }
 }
