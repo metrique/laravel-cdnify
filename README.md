@@ -1,4 +1,4 @@
-# laravel-meta
+# laravel-cdnify
 
 ## Installation
 
