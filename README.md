@@ -33,4 +33,4 @@ Defaults can be configured by editing `config/cdnify.php` in your main applicati
 - `$cdnify->path($path);` Set the path to be CDNified.
 - `$cdnify->environments($environments);` Set the environments where the path should be CDNified, if null defaults will be used.
 - `$cdnify->elixir($bool);` Set whether elixir should be used if available.
-- `$cdnify->roundRobin($bool);` Enables round robin the cdn list.
+- `$cdnify->roundRobin($bool);` Enables round robin on the cdn list.
