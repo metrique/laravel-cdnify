@@ -5,6 +5,7 @@ namespace Metrique\CDNify;
 use Illuminate\Support\ServiceProvider;
 use Metrique\CDNify\Contracts\CDNifyRepositoryInterface;
 use Metrique\CDNify\CDNifyRepository;
+use Metrique\CDNify\Commands\CDNifyCommand;
 
 class CDNifyServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,9 @@ class CDNifyServiceProvider extends ServiceProvider
             '*',
             'Metrique\CDNify\CDNifyViewComposer'
         );
+        
+        // Commands
+        $this->commands('command.metrique.cdnify');
     }
 
     /**
@@ -34,9 +38,32 @@ class CDNifyServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerCDNify();
+        $this->registerCommands();
+    }
+
+    /**
+     * Register the cdnify singleton bindings.
+     *
+     * @return void
+     */
+    public function registerCDNify()
+    {
         $this->app->singleton(
             CDNifyRepositoryInterface::class,
             CDNifyRepository::class
         );
+    }
+
+    /**
+     * Register the artisan commands.
+     *
+     * @return void
+     */
+    private function registerCommands()
+    {
+        $this->app->bindShared('command.metrique.cdnify', function ($app) {
+            return new CDNifyCommand();
+        });
     }
 }
