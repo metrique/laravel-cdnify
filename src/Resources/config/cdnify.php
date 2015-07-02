@@ -1,4 +1,4 @@
-<?php
+€<?php
 return [
     /*
     |--------------------------------------------------------------------------
@@ -45,4 +45,22 @@ return [
     |
     */
     'round_robin' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Command settings.
+    |--------------------------------------------------------------------------
+    |
+    | This holds the list of defaults to be used with the metrique:cdnify
+    | command. These options can be changed in this config and also
+    | overridden by command line flags.
+    |
+    */
+    'command' => [
+        'build_source' => '/build',
+        'build_dest' => '',
+        'disk' => 's3',
+        'force' => false,
+        'manifest' => '/build/rev-manifest.json';
+    ]
 ];

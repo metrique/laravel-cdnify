@@ -3,6 +3,7 @@
 namespace Metrique\CDNify\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,6 +13,8 @@ class CDNifyCommand extends Command {
     const CONSOLE_INFO = 0;
     const CONSOLE_ERROR = 1;
     const CONSOLE_COMMENT = 2;
+
+    protected $config;
 
     /**
      * The console command name.
@@ -50,21 +53,21 @@ class CDNifyCommand extends Command {
      * 
      * @var string
      */
-    protected $build = '/build';
+    protected $build;
 
     /**
      * Force reuploading of files.
      * 
      * @var bool
      */
-    protected $force = false;
+    protected $force;
 
     /**
      * The manifest files to use.
      * 
      * @var array
      */
-    protected $manifest = '/build/rev-manifest.json';
+    protected $manifest;
 
     /**
      * Create a new command instance.
@@ -74,7 +77,6 @@ class CDNifyCommand extends Command {
     public function __construct()
     {
         parent::__construct();
-
     }
 
     /**
@@ -84,8 +86,8 @@ class CDNifyCommand extends Command {
      */
     public function fire()
     {
+        $this->defaults();
         $this->options();
-
         $this->newline();
 
         $this->output(self::CONSOLE_COMMENT, 'php artisan metrique:cdnify');
@@ -114,6 +116,18 @@ class CDNifyCommand extends Command {
 
         $this->newline();
         $this->output(self::CONSOLE_INFO, 'Finished...', true);
+    }
+
+    /**
+     * Loads defaults from the config file.
+     */
+    private function defaults()
+    {
+        $this->build_source = Config::get('build_source', '/build');
+        $this->build_dest = Config::get('build_dest', '');
+        $this->disk = Config::get('disk', 's3');
+        $this->force = Config::get('force', false);
+        $this->manifest = Config::get('manifest', '/build/rev-manifest.json');
     }
 
     /**
@@ -285,7 +299,7 @@ class CDNifyCommand extends Command {
     }
 
     /**
-     * Helper method to make new lines, and comment look pretty!
+     * Helper method to make new lines, and comments look pretty!
      * 
      * @return void
      */
