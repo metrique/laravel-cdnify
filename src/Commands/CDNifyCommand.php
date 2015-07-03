@@ -49,11 +49,18 @@ class CDNifyCommand extends Command {
     ];
 
     /**
-     * The build paths to use.
+     * The build source path.
      * 
      * @var string
      */
-    protected $build;
+    protected $build_source;
+
+    /**
+     * The build dest path.
+     * 
+     * @var string
+     */
+    protected $build_dest;
 
     /**
      * Force reuploading of files.
@@ -87,19 +94,21 @@ class CDNifyCommand extends Command {
     public function fire()
     {
         $this->defaults();
+
         $this->options();
+
         $this->newline();
 
         $this->output(self::CONSOLE_COMMENT, 'php artisan metrique:cdnify');
 
-        $this->output(self::CONSOLE_INFO, 'This will compile and upload assets from ' . $this->manifest . ' to your chosen data store (' . $this->disk .')...', true);
+        $this->output(self::CONSOLE_INFO, 'This will compile and upload assets from ' . $this->manifest . ' to your chosen data store (' . $this->disk . ')...', true);
 
 
         if ($this->confirm('Do you wish to continue?'))
         {
             try {
                 // 1. Compile, copy and version assets.
-                $this->elixir();
+                // $this->elixir();
 
                 // 2. Load newly created manifest file and parse ready for asset upload!
                 $this->manifest();
@@ -120,29 +129,42 @@ class CDNifyCommand extends Command {
 
     /**
      * Loads defaults from the config file.
+     * @return void
      */
     private function defaults()
     {
-        $this->build_source = Config::get('build_source', '/build');
-        $this->build_dest = Config::get('build_dest', '');
-        $this->disk = Config::get('disk', 's3');
-        $this->force = Config::get('force', false);
-        $this->manifest = Config::get('manifest', '/build/rev-manifest.json');
+        $this->build_source = Config::get('cdnify.command.build_source', '/build');
+        $this->build_dest = Config::get('cdnify.command.build_dest', '');
+        $this->disk = Config::get('cdnify.command.disk', 's3');
+        $this->force = Config::get('cdnify.command.force', false);
+        $this->manifest = Config::get('cdnify.command.manifest', '/build/rev-manifest.json');
+
+        dump($this->build_source, $this->build_dest, $this->disk, $this->force, $this->manifest);
+        dump('---');
     }
 
     /**
      * Parses the command line options.
-     * 
      * @return void
      */
     private function options() {
 
         // Build
-        $this->build_source = $this->option('build-source');
-        $this->build_dest = $this->option('build-dest');
+        if(is_string($this->option('build-source')))
+        {
+            $this->build_source = $this->option('build-source');
+        }
+
+        if(is_string($this->option('build-dest')))
+        {
+            $this->build_dest = $this->option('build-dest');
+        }
 
         // Disk
-        $this->disk = $this->option('disk');
+        if(is_string($this->option('disk')))
+        {
+            $this->disk = $this->option('disk');
+        }
 
         if(!in_array($this->disk, $this->validDisks)) {
             $this->output(self::CONSOLE_ERROR, 'Disk not supported.');
@@ -150,15 +172,22 @@ class CDNifyCommand extends Command {
         }
 
         // Force
-        $this->force = $this->option('force');
+        if(is_bool($this->option('force'))) {
+            $this->force = $this->option('force');
+        }        
 
         // Manifest
-        $this->manifest = $this->option('manifest');
+        if(is_string($this->option('manifest')))
+        {
+            $this->manifest = $this->option('manifest');
+        }
+
+        dump($this->build_source, $this->build_dest, $this->disk, $this->force, $this->manifest);
+        dump('---');
     }
 
     /**
      * Runs Elixir or Gulp in production mode.
-     * 
      * @return void
      */
     private function elixir()
@@ -168,23 +197,21 @@ class CDNifyCommand extends Command {
 
     /**
      * Reads the manifest file.
-     * 
      * @return void
      */
     private function manifest()
-    {
+    {      
         $manifestFile = public_path() . $this->manifest;
-        $this->manifest = null;
 
         if(file_exists($manifestFile))
         {
             $this->manifest = $this->isValidJson(file_get_contents($manifestFile));
-        }           
+        }
+
     }
 
     /**
      * Transmits assets included in the manifest files to storage.
-     * 
      * @return void
      */
     private function upload()
@@ -234,7 +261,6 @@ class CDNifyCommand extends Command {
 
     /**
      * Calls systems commands.
-     * 
      * @param string $cmd 
      * @return bool
      */
@@ -256,7 +282,6 @@ class CDNifyCommand extends Command {
 
     /**
      * Validates json data.
-     * 
      * @param string $json 
      * @return string
      */
@@ -274,7 +299,6 @@ class CDNifyCommand extends Command {
 
     /**
      * Outputs information to the console.
-     * 
      * @param int $mode 
      * @param string $message 
      * @return void
@@ -300,7 +324,6 @@ class CDNifyCommand extends Command {
 
     /**
      * Helper method to make new lines, and comments look pretty!
-     * 
      * @return void
      */
     private function newline() {
@@ -309,7 +332,6 @@ class CDNifyCommand extends Command {
 
     /**
      * Get the console command arguments.
-     *
      * @return array
      */
     protected function getArguments()
@@ -321,16 +343,15 @@ class CDNifyCommand extends Command {
 
     /**
      * Get the console command options.
-     *
      * @return array
      */
     protected function getOptions()
     {
         return [
-            ['build-source', 'bs', InputOption::VALUE_OPTIONAL, 'Set build path.', $this->build],
-            ['build-dest', 'bd', InputOption::VALUE_OPTIONAL, 'Set build path.', $this->build],
+            ['build-source', 'bs', InputOption::VALUE_OPTIONAL, 'Set build path.', $this->build_source],
+            ['build-dest', 'bd', InputOption::VALUE_OPTIONAL, 'Set build path.', $this->build_dest],
             ['disk', 'd', InputOption::VALUE_OPTIONAL, 'Set disk/upload method.', $this->disk],
-            ['force', 'f', InputOption::VALUE_NONE, 'Toggle force upload of files.', null],
+            ['force', 'f', InputOption::VALUE_NONE, 'Toggle force upload of files.'],
             ['manifest', 'm', InputOption::VALUE_OPTIONAL, 'Set manifest location.', $this->manifest],
         ];
     }
