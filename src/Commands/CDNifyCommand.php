@@ -138,9 +138,6 @@ class CDNifyCommand extends Command {
         $this->disk = Config::get('cdnify.command.disk', 's3');
         $this->force = Config::get('cdnify.command.force', false);
         $this->manifest = Config::get('cdnify.command.manifest', '/build/rev-manifest.json');
-
-        dump($this->build_source, $this->build_dest, $this->disk, $this->force, $this->manifest);
-        dump('---');
     }
 
     /**
@@ -181,9 +178,6 @@ class CDNifyCommand extends Command {
         {
             $this->manifest = $this->option('manifest');
         }
-
-        dump($this->build_source, $this->build_dest, $this->disk, $this->force, $this->manifest);
-        dump('---');
     }
 
     /**
