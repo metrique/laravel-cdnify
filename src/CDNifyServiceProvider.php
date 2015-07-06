@@ -20,15 +20,12 @@ class CDNifyServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/Resources/config/cdnify.php' => config_path('cdnify.php'),
         ]);
-
-        // View composer
-        view()->composer(
-            '*',
-            'Metrique\CDNify\CDNifyViewComposer'
-        );
         
         // Commands
         $this->commands('command.metrique.cdnify');
+
+        // View composer
+        view()->composer('*', 'Metrique\CDNify\CDNifyViewComposer');
     }
 
     /**
