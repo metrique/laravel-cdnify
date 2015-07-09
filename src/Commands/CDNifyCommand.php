@@ -21,14 +21,19 @@ class CDNifyCommand extends Command {
      *
      * @var string
      */
-    protected $name = 'metrique:cdnify';
+    protected $signature = 'metrique:cdnify
+                            {--build-source=/build : Set build path.}
+                            {--build-dest= : Set build path.}
+                            {--disk=s3 : Set disk/upload method.}
+                            {--force : Toggle force upload of files.}
+                            {--manifest=/build/rev-manifest.json : Set manifest location.}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Deploy laravel-elixir versioned assets to a file system.';
+    protected $description = 'Deploy laravel-elixir versioned assets.';
 
     /**
      * Set disk/upload method.
@@ -91,7 +96,7 @@ class CDNifyCommand extends Command {
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $this->defaults();
 
@@ -108,7 +113,7 @@ class CDNifyCommand extends Command {
         {
             try {
                 // 1. Compile, copy and version assets.
-                // $this->elixir();
+                $this->elixir();
 
                 // 2. Load newly created manifest file and parse ready for asset upload!
                 $this->manifest();
@@ -322,31 +327,5 @@ class CDNifyCommand extends Command {
      */
     private function newline() {
         $this->info('');    
-    }
-
-    /**
-     * Get the console command arguments.
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            // ['example', InputArgument::REQUIRED, 'An example argument.'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['build-source', 'bs', InputOption::VALUE_OPTIONAL, 'Set build path.', $this->build_source],
-            ['build-dest', 'bd', InputOption::VALUE_OPTIONAL, 'Set build path.', $this->build_dest],
-            ['disk', 'd', InputOption::VALUE_OPTIONAL, 'Set disk/upload method.', $this->disk],
-            ['force', 'f', InputOption::VALUE_NONE, 'Toggle force upload of files.'],
-            ['manifest', 'm', InputOption::VALUE_OPTIONAL, 'Set manifest location.', $this->manifest],
-        ];
     }
 }
