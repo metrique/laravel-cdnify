@@ -77,7 +77,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      * {@inheritdocs}
      */
     public function cdn()
-    {   
+    {
         if(!$this->roundRobin)
         {
             return $this->cdn[0];
@@ -126,7 +126,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
 
         return $this;
     }
-    
+
     /**
      * {@inheritdocs}
      */
