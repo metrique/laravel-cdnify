@@ -29,7 +29,7 @@ Config defaults can be configured by editing `config/cdnify.php` in your main ap
 
 You can publish the  `config/cdnify.php` config file to your application config directory by running `php artisan vendor:publish`
 
-### CDN
+### CDNify
 
 $cdnify is automatically registered for use in all Laravel views.
 
@@ -49,7 +49,7 @@ $cdnify is automatically registered for use in all Laravel views.
 
 `$cdnify->roundRobin($bool);` Enables round robin on the cdn list.
 
-### Commands
+### CDNify command
 ```
 php artisan metrique:cdnify
 ```
