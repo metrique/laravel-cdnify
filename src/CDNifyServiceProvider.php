@@ -35,16 +35,16 @@ class CDNifyServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerCDNify();
+        $this->registerCDNifyRepository();
         $this->registerCommands();
     }
 
     /**
-     * Register the cdnify singleton bindings.
+     * Register the CDNifyRepository singleton binding.
      *
      * @return void
      */
-    public function registerCDNify()
+    public function registerCDNifyRepository()
     {
         $this->app->singleton(
             CDNifyRepositoryInterface::class,
