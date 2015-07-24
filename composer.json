@@ -14,9 +14,12 @@
             "Metrique\\CDNify\\": "src/"
         }
     },
+    "require": {
+        "league/flysystem-aws-s3-v3": "~1.0",
+        "illuminate/support": "^5.1",
+        "illuminate/console": "^5.1"
+    },
     "require-dev": {
-        "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
-        "league/flysystem-aws-s3-v3": "~1.0"
+        "php": ">=5.5.9"
     }
 }
