@@ -206,7 +206,6 @@ class CDNifyCommand extends Command {
         {
             $this->manifest = $this->isValidJson(file_get_contents($manifestFile));
         }
-
     }
 
     /**

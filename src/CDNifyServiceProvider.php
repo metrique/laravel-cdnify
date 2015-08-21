@@ -19,7 +19,7 @@ class CDNifyServiceProvider extends ServiceProvider
         // Config
         $this->publishes([
             __DIR__.'/Resources/config/cdnify.php' => config_path('cdnify.php'),
-        ]);
+        ], 'cdnify-config');
         
         // Commands
         $this->commands('command.metrique.cdnify');

@@ -27,7 +27,7 @@
 
 Config defaults can be configured by editing `config/cdnify.php` in your main application directory.
 
-You can publish the  `config/cdnify.php` config file to your application config directory by running `php artisan vendor:publish`
+You can publish the  `config/cdnify.php` config file to your application config directory by running `php artisan vendor:publish --tag="cdnify-config"`
 
 ### CDNify
 
