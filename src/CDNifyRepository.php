@@ -7,7 +7,6 @@ use Metrique\CDNify\Contracts\CDNifyRepositoryInterface;
 class CDNifyRepository implements CDNifyRepositoryInterface
 {
     private $cdn;
-    private $config;
     private $path;
     private $environments;
     private $elixir;
@@ -16,11 +15,9 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     private $roundRobinIndex = -1;
     private $roundRobinLength = 0;
 
-    public function __construct(\Illuminate\Contracts\Config\Repository $config)
+    public function __construct()
     {
-        $this->config = $config;
-
-        $this->defaults = $this->config->get('cdnify');
+        $this->defaults = config('cdnify');
         $this->cdn = array_values($this->defaults['cdn']);
         $this->roundRobinLength = count($this->defaults['cdn']);
         

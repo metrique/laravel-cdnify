@@ -3,7 +3,6 @@
 namespace Metrique\CDNify\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -138,11 +137,11 @@ class CDNifyCommand extends Command {
      */
     private function defaults()
     {
-        $this->build_source = Config::get('cdnify.command.build_source', '/build');
-        $this->build_dest = Config::get('cdnify.command.build_dest', '');
-        $this->disk = Config::get('cdnify.command.disk', 's3');
-        $this->force = Config::get('cdnify.command.force', false);
-        $this->manifest = Config::get('cdnify.command.manifest', '/build/rev-manifest.json');
+        $this->build_source = config('cdnify.command.build_source', '/build');
+        $this->build_dest = config('cdnify.command.build_dest', '');
+        $this->disk = config('cdnify.command.disk', 's3');
+        $this->force = config('cdnify.command.force', false);
+        $this->manifest = config('cdnify.command.manifest', '/build/rev-manifest.json');
     }
 
     /**
