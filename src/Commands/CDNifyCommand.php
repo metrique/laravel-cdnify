@@ -190,7 +190,7 @@ class CDNifyCommand extends Command {
      */
     private function elixir()
     {
-        $this->system('gulp --install --production');
+        $this->system('gulp --production');
     }
 
     /**
