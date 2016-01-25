@@ -245,12 +245,6 @@ class CDNifyCommand extends Command {
             // Store!
             $this->output(self::CONSOLE_COMMENT, 'Sending asset to ' . $this->disk . '... (' . $dest . ')');
 
-            /*
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $file_mime = finfo_file($finfo, $src);
-            finfo_close($finfo);
-            */
-           
             if($storage->put($dest, file_get_contents($src)) !== true) {
                 $this->output(self::CONSOLE_ERROR, 'Fail...');
                 throw new \Exception('Sending asset failed, aborting!', 1);

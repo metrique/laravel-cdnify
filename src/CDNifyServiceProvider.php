@@ -59,7 +59,7 @@ class CDNifyServiceProvider extends ServiceProvider
      */
     private function registerCommands()
     {
-        $this->app->bindShared('command.metrique.cdnify', function ($app) {
+        $this->app->bind('command.metrique.cdnify', function ($app) {
             return new CDNifyCommand();
         });
     }
