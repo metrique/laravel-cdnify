@@ -18,8 +18,9 @@
 
 1. Add the above to the repositories section of your composer.json
 2. Add `"Metrique/laravel-cdnify": "dev-master"` to the require section of your composer.json.
-3. Add `Metrique\CDNify\CDNifyServiceProvider::class,` to your list of service providers. in `config/app.php`.
-4. `composer update`.
+3. `composer update`.
+4. Add `Metrique\CDNify\CDNifyServiceProvider::class` to your list of service providers in `config/app.php`.
+5. Add `'CDNify' => Metrique\CDNify\CDNifyFacade::class` to your list of class aliases in `config/app.php`.
 
 ## Usage
 
