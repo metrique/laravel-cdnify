@@ -20,12 +20,12 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         $this->defaults = config('cdnify');
         $this->cdn = array_values($this->defaults['cdn']);
         $this->roundRobinLength = count($this->defaults['cdn']);
-        
+
         $this->defaults();
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
     public function defaults()
     {
@@ -35,15 +35,19 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
-    public function get($path, $elixir = true)
+    public function get($path, $elixir = null)
     {
+        if (is_null($elixir)) {
+            $elixir = $this->elixir;
+        }
+
         return $this->path($path)->elixir($elixir)->toString();
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
     public function toString()
     {
@@ -52,36 +56,31 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         $environments = $this->environments;
         $path = $this->path ?: false;
 
-        if($path === false)
-        {
+        if ($path === false) {
             return false;
         }
 
-        if($elixir === true)
-        {
+        if ($elixir === true) {
             $path = elixir($path);
         }
 
-        if(in_array(env('APP_ENV'), $environments))
-        {
-            return $this->cdn() . $path;
+        if (in_array(env('APP_ENV'), $environments)) {
+            return $this->cdn().$path;
         }
 
         return $path;
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
     public function cdn()
     {
-        if(!$this->roundRobin)
-        {
+        if (!$this->roundRobin) {
             return $this->cdn[0];
         }
 
-        if(++$this->roundRobinIndex > ($this->roundRobinLength - 1))
-        {
+        if (++$this->roundRobinIndex > ($this->roundRobinLength - 1)) {
             $this->roundRobinIndex = 0;
         }
 
@@ -89,7 +88,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
     public function path($path)
     {
@@ -99,12 +98,11 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
     public function environments($environments)
     {
-        if(is_array($environments))
-        {
+        if (is_array($environments)) {
             $this->environments = $environments;
         }
 
@@ -112,12 +110,11 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
     public function elixir($bool)
     {
-        if(is_bool($bool))
-        {
+        if (is_bool($bool)) {
             $this->elixir = $bool;
         }
 
@@ -125,12 +122,11 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     }
 
     /**
-     * {@inheritdocs}
+     * {@inheritdoc}
      */
     public function roundRobin($bool)
     {
-        if(is_bool($bool))
-        {
+        if (is_bool($bool)) {
             $this->roundRobin = $bool;
         }
 
