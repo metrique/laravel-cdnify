@@ -17,10 +17,6 @@ class CDNifyRepository implements CDNifyRepositoryInterface
 
     public function __construct()
     {
-        $this->defaults = config('cdnify');
-        $this->cdn = array_values(config('cdnify.cdn'));
-        $this->roundRobinLength = count(config('cdnify.cdn'));
-
         $this->defaults();
     }
 
@@ -29,9 +25,12 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      */
     public function defaults()
     {
-        $this->environments = $this->defaults['environments'];
-        $this->elixir = $this->defaults['elixir'];
-        $this->roundRobin = $this->defaults['round_robin'];
+        $this->cdn = array_values(config('cdnify.cdn', []));
+        $this->roundRobinLength = count($this->cdn);
+
+        $this->elixir(config('cdnify.elixir', false));
+        $this->environments(config('cdnify.environments', []));
+        $this->roundRobin(config('cdnify.round_robin'));
     }
 
     /**
@@ -115,6 +114,10 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     {
         if (is_bool($bool)) {
             $this->elixir = $bool;
+        }
+
+        if (!function_exists('elixir')) {
+            $this->elixir = false;
         }
 
         return $this;
