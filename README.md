@@ -1,4 +1,5 @@
 # laravel-cdnify
+[![GitHub release](https://img.shields.io/github/release/metrique/laravel-cdnify.svg?maxAge=2592000)]()
 
 ## Features
 - Add a CDN to any path when a specified environment is active in Laravel 5.
