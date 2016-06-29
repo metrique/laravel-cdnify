@@ -20,7 +20,7 @@ A resource exists in your rev-manifest.json, which has created by Laravel Elixir
 #### Get the CDN as a string.
 `$cdnify->cdn();`
 
-#### Set a local path and get the full CDN path to use.
+#### Set a local path and get the full CDN path.
 `$cdnify->path('/some/static/resource.jpg')->toString();`
 
 ### Config
