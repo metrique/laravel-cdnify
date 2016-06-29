@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -9,7 +10,7 @@ return [
     |
     */
     'cdn' => [
-        'cloudfront' => 'https://' . env('AWS_CLOUDFRONT', ''),
+        'cloudfront' => 'https://'.env('AWS_CLOUDFRONT', ''),
     ],
 
     /*
@@ -61,6 +62,6 @@ return [
         'build_dest' => '',
         'disk' => 's3',
         'force' => false,
-        'manifest' => '/build/rev-manifest.json'
-    ]
+        'manifest' => '/build/rev-manifest.json',
+    ],
 ];
