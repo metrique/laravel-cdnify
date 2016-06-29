@@ -59,7 +59,7 @@ return [
     */
     'command' => [
         'build_source' => '/build',
-        'build_dest' => '',
+        'build_dest' => '/build',
         'disk' => 's3',
         'force' => false,
         'manifest' => '/build/rev-manifest.json',
