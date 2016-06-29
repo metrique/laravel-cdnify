@@ -6,23 +6,20 @@
 
 ## Installation
 
-
-```
-"repositories": [
-    {
-        "url": "https://github.com/Metrique/laravel-cdnify",
-        "type": "git"
-    }
-],
-```
-
-1. Add the above to the repositories section of your composer.json
-2. Add `"Metrique/laravel-cdnify": "dev-master"` to the require section of your composer.json.
-3. `composer update`.
-4. Add `Metrique\CDNify\CDNifyServiceProvider::class` to your list of service providers in `config/app.php`.
-5. Add `'CDNify' => Metrique\CDNify\CDNifyFacade::class` to your list of class aliases in `config/app.php`.
+`composer require metrique/laravel-cdnify`
 
 ## Usage
+
+### Example.
+
+#### File exists in rev-manifest.json, created by Laravel Elixir.
+`<script src="{{ $cdnify->get('js/site.js', true) }}" async></script>`
+
+#### Get the CDN as a string.
+`$cdnify->cdn();`
+
+#### Set and get a path.
+`$cdnify->path('/some/static/resource.jpg')->toString();`
 
 ### Config
 
@@ -34,32 +31,32 @@ You can publish the  `config/cdnify.php` config file to your application config 
 
 $cdnify is automatically registered for use in all Laravel views.
 
-`$cdnify->defaults();` Set the settings back to the config defaults.
+`$cdnify->defaults();` If environments, elixir or roundRobin are changed, this will discard the changes in favour of the config settings.
 
-`$cdnify->get($path, $elixir = true);` Helper utility combining the path, elixir and toString methods.
+`$cdnify->cdn();` Returns a CDN path from the config, if roundRobin is set to true then it will iterate through the list of CDN's on each call.
 
-`$cdnify->toString();` Returns the CDN path as a string.
+`$cdnify->path($path);` Sets the path to be CDNified.
 
-`$cdnify->cdn();` Returns a CDN path, if roundRobin is set to true then it will roundRobin the list of CDN's
+`$cdnify->toString();` Returns the CDN and path as a string.
 
-`$cdnify->path($path);` Set the path to be CDNified.
+`$cdnify->get($path, $elixir = null);` Helper utility combining the path, elixir and toString methods.
 
-`$cdnify->environments($environments);` Set the environments where the path should be CDNified, if null defaults will be used.
+`$cdnify->environments($environments);` Set the environments where the path should be CDNified.
 
-`$cdnify->elixir($bool);` Set whether elixir should be used if available.
+`$cdnify->elixir($bool);` Sets whether elixir should be used, if available.
 
-`$cdnify->roundRobin($bool);` Enables round robin on the cdn list.
+`$cdnify->roundRobin($bool);` Enables round robin iteration on the cdn list.
 
 ### CDNify command
-```
-php artisan metrique:cdnify
-```
-This will deploy any assets listed in build-revision.json to s3, via the Laravel Filesystem.
+
+`php artisan metrique:cdnify`
+This command will run `gulp --production` and then deploy any assets listed in rev-manifest.json to s3 (or other disk), via the Laravel Filesystem.
+
 ### Options
 
-`--build-source[=BUILD-SOURCE]` Set build path. [default: "/build"]
+`--build-source[=BUILD-SOURCE]` Sets the path to the source files that are to be uploaded. [default: "/build"]
 
-`--build-dest[=BUILD-DEST]` Set build path.
+`--build-dest[=BUILD-DEST]` Sets the path where files are to be uploaded. [default: "/build"].
 
 `--disk[=DISK]` Set disk/upload method. [default: "s3"]
 
