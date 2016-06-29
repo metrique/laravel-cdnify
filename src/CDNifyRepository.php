@@ -18,8 +18,8 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     public function __construct()
     {
         $this->defaults = config('cdnify');
-        $this->cdn = array_values($this->defaults['cdn']);
-        $this->roundRobinLength = count($this->defaults['cdn']);
+        $this->cdn = array_values(config('cdnify.cdn'));
+        $this->roundRobinLength = count(config('cdnify.cdn'));
 
         $this->defaults();
     }
@@ -39,11 +39,13 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      */
     public function get($path, $elixir = null)
     {
-        if (is_null($elixir)) {
-            $elixir = $this->elixir;
-        }
+        $elixirReset = $this->elixir;
 
-        return $this->path($path)->elixir($elixir)->toString();
+        $path = $this->path($path)->elixir($elixir)->toString();
+
+        $this->elixir($elixirReset);
+
+        return $path;
     }
 
     /**
@@ -51,20 +53,17 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      */
     public function toString()
     {
-        // Copy
-        $elixir = $this->elixir;
-        $environments = $this->environments;
         $path = $this->path ?: false;
 
         if ($path === false) {
             return false;
         }
 
-        if ($elixir === true) {
+        if ($this->elixir === true) {
             $path = elixir($path);
         }
 
-        if (in_array(env('APP_ENV'), $environments)) {
+        if (in_array(env('APP_ENV'), $this->environments)) {
             return $this->cdn().$path;
         }
 
