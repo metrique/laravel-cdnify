@@ -19,8 +19,8 @@ class CDNifyCommand extends Command
      * @var string
      */
     protected $signature = 'metrique:cdnify
-                            {--build-source=/build : Set build path.}
-                            {--build-dest= : Set build path.}
+                            {--source=/build : Set build source path.}
+                            {--dest=/build : Set build dest path.}
                             {--disk=s3 : Set disk/upload method.}
                             {--force : Toggle force upload of files.}
                             {--manifest=/build/rev-manifest.json : Set manifest location.}';
