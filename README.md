@@ -12,13 +12,14 @@
 
 ### Example.
 
-#### File exists in rev-manifest.json, created by Laravel Elixir.
+#### Get Helper
+A resource exists in your rev-manifest.json, which has created by Laravel Elixir.
 `<script src="{{ $cdnify->get('js/site.js', true) }}" async></script>`
 
 #### Get the CDN as a string.
 `$cdnify->cdn();`
 
-#### Set and get a path.
+#### Set a local path and get the full CDN path to use.
 `$cdnify->path('/some/static/resource.jpg')->toString();`
 
 ### Config
@@ -31,7 +32,7 @@ You can publish the  `config/cdnify.php` config file to your application config 
 
 $cdnify is automatically registered for use in all Laravel views.
 
-`$cdnify->defaults();` If environments, elixir or roundRobin are changed, this will discard the changes in favour of the config settings.
+`$cdnify->defaults();` If *environments*, *elixir* or *roundRobin* settings are changed, this will discard the changes in favour of the config settings.
 
 `$cdnify->cdn();` Returns a CDN path from the config, if roundRobin is set to true then it will iterate through the list of CDN's on each call.
 

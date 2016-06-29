@@ -6,7 +6,8 @@
     "authors": [
         {
             "name": "Daniel Hudson",
-            "email": "support@shinobicorp.com"
+            "email": "support@shinobicorp.com",
+            "homepage": "https://shinobicorp.com"
         }
     ],
     "autoload": {
@@ -15,11 +16,11 @@
         }
     },
     "require": {
-        "league/flysystem-aws-s3-v3": "~1.0",
         "illuminate/support": "^5.1",
         "illuminate/console": "^5.1"
     },
     "require-dev": {
-        "php": ">=5.5.9"
+        "php": ">=5.5.9 || ^7.0",
+        "league/flysystem-aws-s3-v3": "~1.0"
     }
 }
