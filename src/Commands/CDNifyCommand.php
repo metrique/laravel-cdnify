@@ -139,12 +139,12 @@ class CDNifyCommand extends Command
     {
 
         // Build
-        if (is_string($this->option('build-source'))) {
-            $this->build_source = $this->option('build-source');
+        if (is_string($this->option('source'))) {
+            $this->build_source = $this->option('source');
         }
 
-        if (is_string($this->option('build-dest'))) {
-            $this->build_dest = $this->option('build-dest');
+        if (is_string($this->option('dest'))) {
+            $this->build_dest = $this->option('dest');
         }
 
         // Disk
