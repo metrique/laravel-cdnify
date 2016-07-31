@@ -3,7 +3,7 @@
 
 ## Features
 - Add a CDN to any path when a specified environment is active in Laravel 5.
-- Easily publish elixir versioned assets with one simple command.
+- Easily publish elixir versioned assets to a file system of your choice with one simple command.
 
 ## Installation
 
@@ -63,5 +63,7 @@ This command will run `gulp --production` and then deploy any assets listed in r
 `--disk[=DISK]` Set disk/upload method. [default: "s3"]
 
 `--force` Toggle force upload of files.
+
+`--skip-gulp` Skips the running gulp --production
 
 `--manifest[=MANIFEST]` Set manifest location. [default: "/build/rev-manifest.json"]
