@@ -23,7 +23,8 @@ class CDNifyCommand extends Command
                             {--dest=/build : Set build dest path.}
                             {--disk=s3 : Set disk/upload method.}
                             {--force : Toggle force upload of files.}
-                            {--manifest=/build/rev-manifest.json : Set manifest location.}';
+                            {--manifest=/build/rev-manifest.json : Set manifest location.}
+                            {--skip-gulp : Skip the `gulp --production` step.}';
 
     /**
      * The console command description.
@@ -92,19 +93,17 @@ class CDNifyCommand extends Command
     public function handle()
     {
         $this->defaults();
-
         $this->options();
 
         $this->newline();
-
         $this->output(self::CONSOLE_COMMENT, 'php artisan metrique:cdnify');
 
-        $this->output(self::CONSOLE_INFO, 'This will compile and upload assets from '.$this->manifest.' to your chosen data store ('.$this->disk.')...', true);
-
-        if ($this->confirm('Do you wish to continue?')) {
+        if ($this->confirmJob()) {
             try {
                 // 1. Compile, copy and version assets.
-                $this->elixir();
+                if (!$this->skip_gulp) {
+                    $this->elixir();
+                }
 
                 // 2. Load newly created manifest file and parse ready for asset upload!
                 $this->manifest();
@@ -112,7 +111,10 @@ class CDNifyCommand extends Command
                 // 3. Upload the files.
                 $this->upload();
             } catch (\Exception $e) {
-                $this->output(self::CONSOLE_ERROR, 'Encountered an unknown error processing this request, please try again.');
+                $this->output(
+                    self::CONSOLE_ERROR,
+                    'Encountered an unknown error processing this request, please try again.'
+                );
             }
         }
 
@@ -120,6 +122,26 @@ class CDNifyCommand extends Command
         $this->output(self::CONSOLE_INFO, 'Finished...', true);
     }
 
+    protected function confirmJob()
+    {
+        $job = sprintf(
+            'This will upload assets from %s to your chosen data store (%s)...',
+            $this->manifest,
+            $this->disk
+        );
+
+        if (!$this->skip_gulp) {
+            $job = sprintf(
+                'This will compile and upload assets from %s to your chosen data store (%s)...',
+                $this->manifest,
+                $this->disk
+            );
+        }
+
+        $this->output(self::CONSOLE_INFO, $job, true);
+
+        return $this->confirm('Do you wish to continue?');
+    }
     /**
      * Loads defaults from the config file.
      */
@@ -129,6 +151,7 @@ class CDNifyCommand extends Command
         $this->build_dest = config('cdnify.command.build_dest', '');
         $this->disk = config('cdnify.command.disk', 's3');
         $this->force = config('cdnify.command.force', false);
+        $this->skip_gulp = config('cdnify.command.skip_gulp', false);
         $this->manifest = config('cdnify.command.manifest', '/build/rev-manifest.json');
     }
 
@@ -160,6 +183,11 @@ class CDNifyCommand extends Command
         // Force
         if (is_bool($this->option('force'))) {
             $this->force = $this->option('force');
+        }
+
+        // Skip gulp
+        if (is_bool($this->option('skip-gulp'))) {
+            $this->skip_gulp = $this->option('skip-gulp');
         }
 
         // Manifest
@@ -204,6 +232,7 @@ class CDNifyCommand extends Command
 
             // Does the file exist locally?
             if (!file_exists($src)) {
+                $this->output(self::CONSOLE_INFO, $src);
                 $this->output(self::CONSOLE_COMMENT, 'Skipping. Local file doesn\'t exist. ('.$asset.')');
 
                 return $asset;
@@ -285,15 +314,15 @@ class CDNifyCommand extends Command
 
         switch ($mode) {
             case self::CONSOLE_COMMENT:
-                $this->comment('[-msg-] '.$message.$newline);
+                $this->comment($message.$newline);
                 break;
 
             case self::CONSOLE_ERROR:
-                $this->error('[-err-] '.$message.$newline);
+                $this->error($message.$newline);
                 break;
 
             default:
-                $this->info('[-nfo-] '.$message.$newline);
+                $this->info($message.$newline);
                 break;
         }
     }

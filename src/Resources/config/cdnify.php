@@ -62,6 +62,7 @@ return [
         'build_dest' => '/build',
         'disk' => 's3',
         'force' => false,
+        'skip_gulp' => false,
         'manifest' => '/build/rev-manifest.json',
     ],
 ];
