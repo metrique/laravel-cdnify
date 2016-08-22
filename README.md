@@ -7,7 +7,9 @@
 
 ## Installation
 
-`composer require metrique/laravel-cdnify`
+1. `composer require metrique/laravel-cdnify`
+
+2. Add `Metrique\CDNify\CDNifyServiceProvider::class` to the list of Autoloaded Service Providers in `config/app.php`.
 
 ## Usage
 
