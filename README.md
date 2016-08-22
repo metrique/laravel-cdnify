@@ -6,15 +6,18 @@
 - Easily publish elixir versioned assets to a file system of your choice with one simple command.
 
 ## Installation
-
+### Set up.
 1. `composer require metrique/laravel-cdnify`
+2. Add `Metrique\CDNify\CDNifyServiceProvider::class` to the list of *Autoloaded Service Providers* in `config/app.php`.
+3. Add `'CDNify'=>Metrique\CDNify\CDNifyFacade::class` to this list of *Class Aliases* in `config/app.php`. *(Optional)*
 
-2. Add `Metrique\CDNify\CDNifyServiceProvider::class` to the list of Autoloaded Service Providers in `config/app.php`.
+### Config.
+Config defaults can be configured by editing `config/cdnify.php` in your main application directory.
+
+You can publish the  `config/cdnify.php` config file to your application config directory by running `php artisan vendor:publish --tag="cdnify-config"`
 
 ## Usage
-
-### Example.
-
+### Examples.
 #### Get Helper
 A resource exists in your rev-manifest.json, which has created by Laravel Elixir.
 `<script src="{{ $cdnify->get('js/site.js', true) }}" async></script>`
@@ -25,14 +28,7 @@ A resource exists in your rev-manifest.json, which has created by Laravel Elixir
 #### Set a local path and get the full CDN path.
 `$cdnify->path('/some/static/resource.jpg')->toString();`
 
-### Config
-
-Config defaults can be configured by editing `config/cdnify.php` in your main application directory.
-
-You can publish the  `config/cdnify.php` config file to your application config directory by running `php artisan vendor:publish --tag="cdnify-config"`
-
 ### CDNify
-
 $cdnify is automatically registered for use in all Laravel views.
 
 `$cdnify->defaults();` If *environments*, *elixir* or *roundRobin* settings are changed, this will discard the changes in favour of the config settings.
@@ -52,12 +48,10 @@ $cdnify is automatically registered for use in all Laravel views.
 `$cdnify->roundRobin($bool);` Enables round robin iteration on the cdn list.
 
 ### CDNify command
-
 `php artisan metrique:cdnify`
 This command will run `gulp --production` and then deploy any assets listed in rev-manifest.json to s3 (or other disk), via the Laravel Filesystem.
 
 ### Options
-
 `--build-source[=BUILD-SOURCE]` Sets the path to the source files that are to be uploaded. [default: "/build"]
 
 `--build-dest[=BUILD-DEST]` Sets the path where files are to be uploaded. [default: "/build"].
