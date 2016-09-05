@@ -92,8 +92,8 @@ class CDNifyCommand extends Command
      */
     public function handle()
     {
-        $this->defaults();
-        $this->options();
+        $this->setDefaults();
+        $this->setOptions();
 
         $this->newline();
         $this->output(self::CONSOLE_COMMENT, 'php artisan metrique:cdnify');
@@ -145,7 +145,7 @@ class CDNifyCommand extends Command
     /**
      * Loads defaults from the config file.
      */
-    private function defaults()
+    private function setDefaults()
     {
         $this->build_source = config('cdnify.command.build_source', '/build');
         $this->build_dest = config('cdnify.command.build_dest', '');
@@ -158,7 +158,7 @@ class CDNifyCommand extends Command
     /**
      * Parses the command line options.
      */
-    private function options()
+    private function setOptions()
     {
 
         // Build
