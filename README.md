@@ -39,7 +39,7 @@ $cdnify is automatically registered for use in all Laravel views.
 
 `$cdnify->toString();` Returns the CDN and path as a string.
 
-`$cdnify->get($path, $elixir = null);` Helper utility combining the path, elixir and toString methods.
+`$cdnify->get($path, $params = []);` Helper utility combining the path and toString methods. You may pass an array of params (elixir, environments, roundRobin) to override the settings once.
 
 `$cdnify->environments($environments);` Set the environments where the path should be CDNified.
 
