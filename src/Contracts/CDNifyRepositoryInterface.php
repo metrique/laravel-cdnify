@@ -12,12 +12,14 @@ interface CDNifyRepositoryInterface
     public function defaults();
 
     /**
-     * Helper utility combining the path, elixir and toString methods.
+     * Helper utility combining the path, elixir, environment and toString methods.
+     * Parameters can be 'elixir', 'environment' or 'roundrobin'.
+     *
      * @param  string  $path
-     * @param  boolean $elixir
+     * @param  array $params
      * @return string
      */
-    public function get($path, $elixir = true);
+    public function get($path, $params = []);
 
     /**
      * Returns the CDN path as a string.
@@ -40,14 +42,14 @@ interface CDNifyRepositoryInterface
     /**
      * Set the environments where the path should be CDNified, if null defaults will be used.
      * @param  array $environments
-     * @return $this             
+     * @return $this
      */
     public function environments($environments);
 
     /**
      * Set whether elixir should be used if available.
      * @param  bool $bool
-     * @return $this    
+     * @return $this
      */
     public function elixir($bool);
 

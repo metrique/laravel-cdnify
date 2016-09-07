@@ -36,13 +36,31 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function get($path, $elixir = null)
+    public function get($path, $params = [])
     {
-        $elixirReset = $this->elixir;
+        if (is_bool($params)) {
+            $params = [
+                'elixir' => $params
+            ];
+        }
 
-        $path = $this->path($path)->elixir($elixir)->toString();
+        $resets = collect([
+            'elixir' => $this->elixir,
+            'environments' => $this->environments,
+            'roundRobin' => $this->roundRobin,
+        ]);
 
-        $this->elixir($elixirReset);
+        $params = $resets->merge($params)->only($resets->keys()->all());
+
+        $params->each(function ($key, $item) {
+            $this->{$item}($key);
+        });
+
+        $path = $this->path($path)->toString();
+
+        $resets->each(function ($key, $item) {
+            $this->{$item}($key);
+        });
 
         return $path;
     }
