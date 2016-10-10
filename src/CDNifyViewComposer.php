@@ -3,14 +3,14 @@
 namespace Metrique\CDNify;
 
 use Illuminate\Contracts\View\View;
-use Metrique\CDNify\Contracts\CDNifyRepositoryInterface as CDNifyRepository;
+use Metrique\CDNify\Contracts\CDNifyRepositoryInterface as CDNify;
 
 class CDNifyViewComposer
 {
     /**
      * The cdnify repository implementation.
      *
-     * @var CDNifyRepository
+     * @var CDNify
      */
     protected $cdnify;
 
@@ -20,7 +20,7 @@ class CDNifyViewComposer
      * @param  UserRepository  $users
      * @return void
      */
-    public function __construct(CDNifyRepository $cdnify)
+    public function __construct(CDNify $cdnify)
     {
         // Dependencies automatically resolved by service container...
         $this->cdnify = $cdnify;
