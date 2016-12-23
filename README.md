@@ -9,7 +9,7 @@
 ### Set up.
 1. `composer require metrique/laravel-cdnify`
 2. Add `Metrique\CDNify\CDNifyServiceProvider::class` to the list of *Autoloaded Service Providers* in `config/app.php`.
-3. Add `'CDNify'=>Metrique\CDNify\CDNifyFacade::class` to this list of *Class Aliases* in `config/app.php`. *(Optional)*
+3. Add `'CDNify'=>Metrique\CDNify\CDNifyFacade::class` to the list of *Class Aliases* in `config/app.php`. *(Optional)*
 
 ### Config.
 Config defaults can be configured by editing `config/cdnify.php` in your main application directory.
