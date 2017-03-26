@@ -77,7 +77,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         }
 
         if ($this->mix === true) {
-            $path = $this->mixOrMix();
+            $path = $this->mixOrElixir($this->path);
         }
 
         if (in_array(env('APP_ENV'), $this->environments)) {
@@ -153,7 +153,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         return $this;
     }
     
-    protected function mixOrMix($path)
+    protected function mixOrElixir($path)
     {
         if (function_exists('mix')) {
             return mix($path);
