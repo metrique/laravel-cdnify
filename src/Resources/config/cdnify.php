@@ -15,13 +15,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Laravel Elixir.
+    | Laravel Mix and Elixir.
     |--------------------------------------------------------------------------
     |
-    | This specifies if cdnify should use elixir() to wrap the path.
+    | This specifies if cdnify should use mix() to wrap the path,
+    | When mix is not found cdnify will fall back to use elixir.
     |
     */
-    'elixir' => true,
+    'mix' => true,
 
     /*
     |--------------------------------------------------------------------------

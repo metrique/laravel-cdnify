@@ -9,7 +9,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     private $cdn;
     private $path;
     private $environments;
-    private $elixir;
+    private $mix;
 
     private $roundRobin;
     private $roundRobinIndex = -1;
@@ -28,7 +28,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         $this->cdn = array_values(config('cdnify.cdn', []));
         $this->roundRobinLength = count($this->cdn);
 
-        $this->elixir(config('cdnify.elixir', false));
+        $this->mix(config('cdnify.mix', false));
         $this->environments(config('cdnify.environments', []));
         $this->roundRobin(config('cdnify.round_robin'));
     }
@@ -40,12 +40,12 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     {
         if (is_bool($params)) {
             $params = [
-                'elixir' => $params
+                'mix' => $params
             ];
         }
 
         $resets = collect([
-            'elixir' => $this->elixir,
+            'mix' => $this->mix,
             'environments' => $this->environments,
             'roundRobin' => $this->roundRobin,
         ]);
@@ -76,8 +76,8 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             return false;
         }
 
-        if ($this->elixir === true) {
-            $path = elixir($path);
+        if ($this->mix === true) {
+            $path = $this->mixOrMix();
         }
 
         if (in_array(env('APP_ENV'), $this->environments)) {
@@ -128,14 +128,14 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function elixir($bool)
+    public function mix($bool)
     {
         if (is_bool($bool)) {
-            $this->elixir = $bool;
+            $this->mix = $bool;
         }
 
-        if (!function_exists('elixir')) {
-            $this->elixir = false;
+        if (!function_exists('mix')) {
+            $this->mix = false;
         }
 
         return $this;
@@ -151,5 +151,18 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         }
 
         return $this;
+    }
+    
+    protected function mixOrMix($path)
+    {
+        if (function_exists('mix')) {
+            return mix($path);
+        }
+        
+        if (function_exists('mix')) {
+            return mix($path);
+        }
+        
+        return $path;
     }
 }

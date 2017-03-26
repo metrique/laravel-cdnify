@@ -19,19 +19,19 @@ class CDNifyCommand extends Command
      * @var string
      */
     protected $signature = 'metrique:cdnify
-                            {--source=/build : Set build source path.}
-                            {--dest=/build : Set build dest path.}
+                            {--source=/ : Set build source path.}
+                            {--dest=/public : Set build dest path.}
                             {--disk=s3 : Set disk/upload method.}
                             {--force : Toggle force upload of files.}
-                            {--manifest=/build/rev-manifest.json : Set manifest location.}
-                            {--skip-gulp : Skip the `gulp --production` step.}';
+                            {--manifest=/mix-manifest.json : Set manifest location.}
+                            {--skip-build : Skip the build step.}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Deploy laravel-elixir versioned assets.';
+    protected $description = 'Deploy laravel-mix versioned assets.';
 
     /**
      * Set disk/upload method.
@@ -101,9 +101,7 @@ class CDNifyCommand extends Command
         if ($this->confirmJob()) {
             try {
                 // 1. Compile, copy and version assets.
-                if (!$this->skip_gulp) {
-                    $this->elixir();
-                }
+                $this->mix();
 
                 // 2. Load newly created manifest file and parse ready for asset upload!
                 $this->manifest();
@@ -130,7 +128,7 @@ class CDNifyCommand extends Command
             $this->disk
         );
 
-        if (!$this->skip_gulp) {
+        if (!$this->skip_build) {
             $job = sprintf(
                 'This will compile and upload assets from %s to your chosen data store (%s)...',
                 $this->manifest,
@@ -147,11 +145,11 @@ class CDNifyCommand extends Command
      */
     private function setDefaults()
     {
-        $this->build_source = config('cdnify.command.build_source', '/build');
+        $this->build_source = config('cdnify.command.build_source', '/');
         $this->build_dest = config('cdnify.command.build_dest', '');
         $this->disk = config('cdnify.command.disk', 's3');
         $this->force = config('cdnify.command.force', false);
-        $this->skip_gulp = config('cdnify.command.skip_gulp', false);
+        $this->skip_build = config('cdnify.command.skip_build', false);
         $this->manifest = config('cdnify.command.manifest', '/build/rev-manifest.json');
     }
 
@@ -185,9 +183,9 @@ class CDNifyCommand extends Command
             $this->force = $this->option('force');
         }
 
-        // Skip gulp
-        if (is_bool($this->option('skip-gulp'))) {
-            $this->skip_gulp = $this->option('skip-gulp');
+        // Skip build
+        if (is_bool($this->option('skip-build'))) {
+            $this->skip_build = $this->option('skip-build');
         }
 
         // Manifest
@@ -199,9 +197,19 @@ class CDNifyCommand extends Command
     /**
      * Runs Elixir or Gulp in production mode.
      */
-    private function elixir()
+    private function mix()
     {
-        $this->system('gulp --production');
+        if ($this->skip_build) {
+            return false;
+        }
+        
+        if (function_exists('mix')) {
+            return $this->system('npm run production');
+        }
+        
+        if (function_exists('elixir')) {
+            return $this->system('gulp --production');
+        }
     }
 
     /**
@@ -227,8 +235,8 @@ class CDNifyCommand extends Command
         $this->output(self::CONSOLE_INFO, 'Start asset upload to '.$this->disk.'.');
 
         array_walk($this->manifest, function ($asset) {
-            $src = public_path().$this->build_source.'/'.$asset;
-            $dest = $this->build_dest.'/'.$asset;
+            $src = str_replace('//', '/', public_path().$this->build_source.'/'.$asset);
+            $dest = str_replace('//', '/', $this->build_dest.'/'.$asset);
 
             // Does the file exist locally?
             if (!file_exists($src)) {
