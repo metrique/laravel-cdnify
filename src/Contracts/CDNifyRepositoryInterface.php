@@ -12,8 +12,8 @@ interface CDNifyRepositoryInterface
     public function defaults();
 
     /**
-     * Helper utility combining the path, elixir, environment and toString methods.
-     * Parameters can be 'elixir', 'environment' or 'roundrobin'.
+     * Helper utility combining the path, mix, environment and toString methods.
+     * Parameters can be 'mix', 'environment' or 'roundrobin'.
      *
      * @param  string  $path
      * @param  array $params
@@ -47,11 +47,11 @@ interface CDNifyRepositoryInterface
     public function environments($environments);
 
     /**
-     * Set whether elixir should be used if available.
+     * Set whether mix should be used if available.
      * @param  bool $bool
      * @return $this
      */
-    public function elixir($bool);
+    public function mix($bool);
 
     /**
      * Enables round robin of the cdn list
