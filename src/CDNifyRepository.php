@@ -159,8 +159,8 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             return mix($path);
         }
         
-        if (function_exists('mix')) {
-            return mix($path);
+        if (function_exists('elixir')) {
+            return elixir($path);
         }
         
         return $path;
