@@ -38,28 +38,22 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      */
     public function get($path, $params = [])
     {
-        if (is_bool($params)) {
-            $params = [
-                'mix' => $params
-            ];
-        }
-
         $resets = collect([
             'mix' => $this->mix,
             'environments' => $this->environments,
             'roundRobin' => $this->roundRobin,
         ]);
-
+        
         $params = $resets->merge($params)->only($resets->keys()->all());
-
-        $params->each(function ($key, $item) {
-            $this->{$item}($key);
+        
+        $params->each(function ($item, $key) {
+            $this->{$key}($item);
         });
 
         $path = $this->path($path)->toString();
 
-        $resets->each(function ($key, $item) {
-            $this->{$item}($key);
+        $resets->each(function ($item, $key) {
+            $this->{$key}($item);
         });
 
         return $path;
@@ -75,11 +69,11 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         if ($path === false) {
             return false;
         }
-
+        
         if ($this->mix === true) {
             $path = $this->mixOrElixir($this->path);
         }
-
+        
         if (in_array(env('APP_ENV'), $this->environments)) {
             return $this->cdn().$path;
         }
@@ -132,10 +126,6 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     {
         if (is_bool($bool)) {
             $this->mix = $bool;
-        }
-
-        if (!function_exists('mix')) {
-            $this->mix = false;
         }
 
         return $this;
