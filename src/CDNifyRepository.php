@@ -51,7 +51,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         });
 
         $path = $this->path($path)->toString();
-
+        dd($path);
         $resets->each(function ($item, $key) {
             $this->{$key}($item);
         });
