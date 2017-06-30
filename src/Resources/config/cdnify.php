@@ -18,11 +18,15 @@ return [
     | Laravel Mix and Elixir.
     |--------------------------------------------------------------------------
     |
-    | This specifies if cdnify should use mix() to wrap the path,
+    | 'mix' specifies if cdnify should use mix() to wrap the path,
     | When mix is not found cdnify will fall back to use elixir.
+    |
+    | 'rename_query_strings' specifies that any versioned asset should
+    | be renamed prior them being uploaded and retrieved from a cdn...
     |
     */
     'mix' => true,
+    'rename_query_strings' => true,
 
     /*
     |--------------------------------------------------------------------------

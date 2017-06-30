@@ -10,6 +10,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     private $path;
     private $environments;
     private $mix;
+    private $renameQueryStrings;
 
     private $roundRobin;
     private $roundRobinIndex = -1;
@@ -26,11 +27,14 @@ class CDNifyRepository implements CDNifyRepositoryInterface
     public function defaults()
     {
         $this->cdn = array_values(config('cdnify.cdn', []));
+        $this->renameQueryStrings = config('cdnify.rename_query_strings', true);
         $this->roundRobinLength = count($this->cdn);
-
+        
         $this->mix(config('cdnify.mix', false));
         $this->environments(config('cdnify.environments', []));
         $this->roundRobin(config('cdnify.round_robin'));
+        
+        return $this;
     }
 
     /**
@@ -72,6 +76,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         
         if ($this->mix === true) {
             $path = $this->mixOrElixir($this->path);
+            $path = $this->renameQueryString($path);
         }
         
         if (in_array(env('APP_ENV'), $this->environments)) {
@@ -141,6 +146,37 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         }
 
         return $this;
+    }
+    
+    /**
+     * {@inheritdoc}
+     * @param  [type] $path   [description]
+     * @param  array  $params [description]
+     * @return [type]         [description]
+     */
+    public function renameQueryString($path, $params = ['key' => 'id', 'seperator' => '-'])
+    {
+        if (!$this->renameQueryStrings) {
+            return $path;
+        }
+        
+        $parsed_path = parse_url($path);
+        
+        if (!$parsed_path) {
+            return $path;
+        }
+        
+        // Extract query hash from query string
+        parse_str($parsed_path['query'], $query);
+        $hash = $query[$params['key']] ?? null;
+        
+        if (!empty($hash)) {
+            $hash = $params['seperator'].$hash;
+        }
+        // Insert hash before extension.
+        $path = pathinfo($parsed_path['path']);
+        
+        return sprintf('%s/%s%s.%s', $path['dirname'], $path['filename'], $hash, $path['extension']);
     }
     
     protected function mixOrElixir($path)

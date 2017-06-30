@@ -7,7 +7,8 @@ interface CDNifyRepositoryInterface
 
     /**
      * Set the settings back to the config defaults.
-     * @return [type] [description]
+     *
+     * @return $this
      */
     public function defaults();
 
@@ -23,17 +24,20 @@ interface CDNifyRepositoryInterface
 
     /**
      * Returns the CDN path as a string.
+     *
      * @return string|false
      */
     public function toString();
 
     /**
-     * Returns a CDN path, if roundRobin is set to true then it will roundRobin the list of CDN's
+     * Returns a CDN path, if roundRobin is set to true then it will roundRobin the list of CDN's.
+     *
      */
     public function cdn();
 
     /**
      * Set the path to be CDNified.
+     *
      * @param  string $path
      * @return $this
      */
@@ -41,6 +45,7 @@ interface CDNifyRepositoryInterface
 
     /**
      * Set the environments where the path should be CDNified, if null defaults will be used.
+     *
      * @param  array $environments
      * @return $this
      */
@@ -48,15 +53,27 @@ interface CDNifyRepositoryInterface
 
     /**
      * Set whether mix should be used if available.
+     *
      * @param  bool $bool
      * @return $this
      */
     public function mix($bool);
 
     /**
-     * Enables round robin of the cdn list
+     * Enables round robin of the cdn list.
+     *
      * @param  bool $bool
      * @return $this
      */
     public function roundRobin($bool);
+    
+    /**
+     * Moves a hash from the query string to just before the file extension, looks for 'id'
+     * as the hash key by default.
+     *
+     * @param  string $path
+     * @param  array  $params
+     * @return string
+     */
+    public function renameQueryString($path, $params = ['key' => 'id']);
 }

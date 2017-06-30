@@ -4,6 +4,7 @@ namespace Metrique\CDNify\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use Metrique\CDNify\Contracts\CDNifyRepositoryInterface;
 
 class CDNifyCommand extends Command
 {
@@ -84,6 +85,7 @@ class CDNifyCommand extends Command
      */
     public function __construct()
     {
+        $this->cdnify = resolve(CDNifyRepositoryInterface::class);
         parent::__construct();
     }
 
@@ -101,7 +103,7 @@ class CDNifyCommand extends Command
         if ($this->confirmJob()) {
             try {
                 // 1. Compile, copy and version assets.
-                $this->mix();
+                $this->build();
 
                 // 2. Load newly created manifest file and parse ready for asset upload!
                 $this->manifest();
@@ -197,7 +199,7 @@ class CDNifyCommand extends Command
     /**
      * Runs Elixir or Gulp in production mode.
      */
-    private function mix()
+    private function build()
     {
         if ($this->skip_build) {
             return false;
@@ -235,9 +237,12 @@ class CDNifyCommand extends Command
         $this->output(self::CONSOLE_INFO, 'Start asset upload to '.$this->disk.'.');
 
         array_walk($this->manifest, function ($asset) {
-            $src = str_replace('//', '/', public_path().$this->build_source.'/'.$asset);
-            $dest = str_replace('//', '/', $this->build_dest.'/'.$asset);
-
+            $src = sprintf('%s%s/%s', public_path(), $this->build_source, parse_url($asset)['path']);
+            $src = str_replace('//', '/', $src);
+            
+            $dest = sprintf('%s/%s', $this->build_dest, $this->cdnify->renameQueryString($asset));
+            $dest = str_replace('//', '/', $dest);
+                        
             // Does the file exist locally?
             if (!file_exists($src)) {
                 $this->output(self::CONSOLE_INFO, $src);
