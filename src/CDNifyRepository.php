@@ -156,10 +156,15 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      */
     public function renameQueryString($path, $params = ['key' => 'id', 'separator' => '-'])
     {
-        if (!$this->renameQueryStrings || env('APP_ENV') == 'local') {
+        if (env('APP_ENV') == 'local') {
             return $path;
         }
         
+        if (!$this->renameQueryStrings) {
+            return $path;
+        }
+        
+        // Parth query string
         $parsed_path = parse_url($path);
         
         if (!$parsed_path) {
