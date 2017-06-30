@@ -75,5 +75,5 @@ interface CDNifyRepositoryInterface
      * @param  array  $params
      * @return string
      */
-    public function renameQueryString($path, $params = ['key' => 'id']);
+    public function renameQueryString($path, $params = ['key' => 'id', 'separator' => '-']);
 }

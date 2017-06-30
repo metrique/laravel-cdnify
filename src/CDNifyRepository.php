@@ -154,7 +154,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      * @param  array  $params [description]
      * @return [type]         [description]
      */
-    public function renameQueryString($path, $params = ['key' => 'id', 'seperator' => '-'])
+    public function renameQueryString($path, $params = ['key' => 'id', 'separator' => '-'])
     {
         if (!$this->renameQueryStrings) {
             return $path;
@@ -171,8 +171,9 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         $hash = $query[$params['key']] ?? null;
         
         if (!empty($hash)) {
-            $hash = $params['seperator'].$hash;
+            $hash = $params['separator'].$hash;
         }
+        
         // Insert hash before extension.
         $path = pathinfo($parsed_path['path']);
         
