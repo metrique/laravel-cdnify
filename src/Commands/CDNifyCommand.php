@@ -246,7 +246,7 @@ class CDNifyCommand extends Command
             // Does the file exist locally?
             if (!file_exists($src)) {
                 $this->output(self::CONSOLE_INFO, $src);
-                $this->output(self::CONSOLE_COMMENT, 'Skipping. Local file doesn\'t exist. ('.$asset.')');
+                $this->output(self::CONSOLE_COMMENT, 'Skipping. Local file doesn\'t exist. ('.$dest.')');
 
                 return $asset;
             }
@@ -256,7 +256,7 @@ class CDNifyCommand extends Command
 
             // Exists already on S3 check...
             if ($storage->exists($dest) && $this->force == false) {
-                $this->output(self::CONSOLE_COMMENT, 'Skipping. Asset exists on '.$this->disk.'. ('.$asset.')');
+                $this->output(self::CONSOLE_COMMENT, 'Skipping. Asset exists on '.$this->disk.'. ('.$dest.')');
 
                 return $asset;
             }
