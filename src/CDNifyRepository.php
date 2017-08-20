@@ -75,8 +75,9 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         }
         
         if ($this->mix === true) {
-            $path = $this->mixOrElixir($this->path);
-            $path = $this->renameQueryString($path);
+            $path = $this->renameQueryString(
+                $this->mixOrElixir($this->path)
+            );
         }
         
         if (in_array(env('APP_ENV'), $this->environments)) {
@@ -156,10 +157,6 @@ class CDNifyRepository implements CDNifyRepositoryInterface
      */
     public function renameQueryString($path, $params = ['key' => 'id', 'separator' => '-'])
     {
-        if (env('APP_ENV') == 'local') {
-            return $path;
-        }
-        
         if (!$this->renameQueryStrings) {
             return $path;
         }
