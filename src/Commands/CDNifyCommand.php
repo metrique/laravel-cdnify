@@ -15,6 +15,14 @@ class CDNifyCommand extends Command
     protected $config;
 
     /**
+     * Counters
+     */
+    protected $counts = [
+        'skipped' => 0,
+        'uploaded' => 0,
+    ];
+    
+    /**
      * The console command name.
      *
      * @var string
@@ -25,7 +33,8 @@ class CDNifyCommand extends Command
                             {--disk : Set disk/upload method.}
                             {--force : Toggle force upload of files.}
                             {--manifest : Set manifest location.}
-                            {--skip-build : Skip the build step.}';
+                            {--skip-build : Skip the build step.}
+                            {--detail : Show upload detail.}';
 
     /**
      * The console command description.
@@ -79,6 +88,13 @@ class CDNifyCommand extends Command
      * @var array
      */
     protected $manifest;
+    
+    /**
+     * Detailed output
+     *
+     * @var bool
+     */
+    protected $detail;
 
     /**
      * Create a new command instance.
@@ -98,7 +114,7 @@ class CDNifyCommand extends Command
         $this->setOptions();
 
         $this->newline();
-        $this->output(self::CONSOLE_COMMENT, 'php artisan metrique:cdnify');
+        $this->comment('metrique/laravel-cdnify');
 
         if ($this->confirmJob()) {
             try {
@@ -111,15 +127,12 @@ class CDNifyCommand extends Command
                 // 3. Upload the files.
                 $this->upload();
             } catch (\Exception $e) {
-                $this->output(
-                    self::CONSOLE_ERROR,
-                    'Encountered an unknown error processing this request, please try again.'
-                );
+                $this->error('Encountered an unknown error processing this request, please try again.');
             }
         }
 
         $this->newline();
-        $this->output(self::CONSOLE_INFO, 'Finished...', true);
+        $this->info("Finished...");
     }
 
     protected function confirmJob()
@@ -138,7 +151,7 @@ class CDNifyCommand extends Command
             );
         }
 
-        $this->output(self::CONSOLE_INFO, $job, true);
+        $this->info($job);
 
         return $this->confirm('Do you wish to continue?');
     }
@@ -149,6 +162,7 @@ class CDNifyCommand extends Command
     {
         $this->build_source = config('cdnify.command.build_source', '/');
         $this->build_dest = config('cdnify.command.build_dest', '');
+        $this->detail = false;
         $this->disk = config('cdnify.command.disk', 's3');
         $this->force = config('cdnify.command.force', false);
         $this->skip_build = config('cdnify.command.skip_build', false);
@@ -160,7 +174,6 @@ class CDNifyCommand extends Command
      */
     private function setOptions()
     {
-
         // Build
         if (is_string($this->option('source'))) {
             $this->build_source = $this->option('source');
@@ -176,7 +189,7 @@ class CDNifyCommand extends Command
         }
 
         if (!in_array($this->disk, $this->validDisks)) {
-            $this->output(self::CONSOLE_ERROR, 'Disk not supported.');
+            $this->error('Disk not supported.');
             throw new \Exception('Disk not supported, aborting!', 1);
         }
 
@@ -193,6 +206,11 @@ class CDNifyCommand extends Command
         // Manifest
         if (is_string($this->option('manifest'))) {
             $this->manifest = $this->option('manifest');
+        }
+        
+        // Detail
+        if (is_bool($this->option('detail'))) {
+            $this->detail = $this->option('detail');
         }
     }
 
@@ -233,8 +251,7 @@ class CDNifyCommand extends Command
     {
         $disk = $this->disk;
 
-        $this->newline();
-        $this->output(self::CONSOLE_INFO, 'Start asset upload to '.$this->disk.'.');
+        $this->info(sprintf("Start asset upload to %s...\n", $this->disk));
 
         array_walk($this->manifest, function ($asset) {
             $src = sprintf('%s%s/%s', public_path(), $this->build_source, parse_url($asset)['path']);
@@ -245,9 +262,9 @@ class CDNifyCommand extends Command
                         
             // Does the file exist locally?
             if (!file_exists($src)) {
-                $this->output(self::CONSOLE_INFO, $src);
-                $this->output(self::CONSOLE_COMMENT, 'Skipping. Local file doesn\'t exist. ('.$dest.')');
-
+                $this->_comment(sprintf('Skipping. Local file doesn\'t exist. (%s)', $src));
+                $this->counts['skipped']++;
+                
                 return $asset;
             }
 
@@ -256,23 +273,31 @@ class CDNifyCommand extends Command
 
             // Exists already on S3 check...
             if ($storage->exists($dest) && $this->force == false) {
-                $this->output(self::CONSOLE_COMMENT, 'Skipping. Asset exists on '.$this->disk.'. ('.$dest.')');
-
+                $this->_comment(sprintf('Skipping. Asset exists on %s. (%s)', $this->disk, $dest));
+                $this->counts['skipped']++;
+                
                 return $asset;
             }
 
             // Store!
-            $this->output(self::CONSOLE_COMMENT, 'Sending asset to '.$this->disk.'... ('.$dest.')');
+            $this->_comment(sprintf('Sending asset to %s. (%s)', $this->disk, $dest));
 
             if ($storage->put($dest, file_get_contents($src)) !== true) {
-                $this->output(self::CONSOLE_ERROR, 'Fail...');
+                $this->_error('Fail...');
                 throw new \Exception('Sending asset failed, aborting!', 1);
             }
-
-            $this->output(self::CONSOLE_INFO, 'Success...');
+            
+            $this->counts['uploaded']++;
+            
+            if ($this->detail) {
+                $this->_info('Success...');
+            }
         });
-
-        $this->output(self::CONSOLE_INFO, 'End asset upload to '.$this->disk.'.');
+        
+        $this->newline();
+        $this->info(sprintf('Asset upload to %s completed.', $this->disk));
+        $this->comment(sprintf('%d files uploaded', $this->counts['uploaded']));
+        $this->comment(sprintf('%d files skipped', $this->counts['skipped']));
     }
 
     /**
@@ -284,15 +309,14 @@ class CDNifyCommand extends Command
      */
     private function system($cmd)
     {
-        $this->newline();
-        $this->output(self::CONSOLE_INFO, 'Start system command. ('.$cmd.')');
+        $this->info(sprintf('Start system command. (%s)', $cmd));
 
         if (!system($cmd)) {
-            $this->output(self::CONSOLE_ERROR, 'System command failed...');
+            $this->error(sprintf('System command failed... (%s)', $cmd));
             throw new \Exception('System command failed.', 1);
         }
 
-        $this->output(self::CONSOLE_INFO, 'End system command. ('.$cmd.')');
+        $this->info(sprintf('End system command. (%s)', $cmd));
 
         return true;
     }
@@ -316,35 +340,31 @@ class CDNifyCommand extends Command
     }
 
     /**
-     * Outputs information to the console.
-     *
-     * @param int    $mode
-     * @param string $message
-     */
-    private function output($mode, $message, $newline = false)
-    {
-        $newline = $newline ? PHP_EOL : '';
-
-        switch ($mode) {
-            case self::CONSOLE_COMMENT:
-                $this->comment($message.$newline);
-                break;
-
-            case self::CONSOLE_ERROR:
-                $this->error($message.$newline);
-                break;
-
-            default:
-                $this->info($message.$newline);
-                break;
-        }
-    }
-
-    /**
      * Helper method to make new lines, and comments look pretty!
      */
     private function newline()
     {
         $this->info('');
+    }
+    
+    private function _info($string, $verbosity = null)
+    {
+        if ($this->detail) {
+            return $this->info($string);
+        }
+    }
+    
+    private function _comment($string, $verbosity = null)
+    {
+        if ($this->detail) {
+            return $this->comment($string);
+        }
+    }
+    
+    private function _error($string, $verbosity = null)
+    {
+        if ($this->detail) {
+            return $this->error($string);
+        }
     }
 }
