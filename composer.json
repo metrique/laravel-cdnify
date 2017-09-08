@@ -16,11 +16,20 @@
         }
     },
     "require": {
-        "illuminate/support": "^5.1",
-        "illuminate/console": "^5.1"
+        "laravel/framework": "^5.5"
     },
     "require-dev": {
         "php": ">=5.5.9 || ^7.0",
         "league/flysystem-aws-s3-v3": "~1.0"
-    }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Metrique\\CDNify\\CDNifyServiceProvider"
+            ],
+            "aliases": {
+                "CDNify": "Metrique\\CDNify\\CDNifyFacade"
+            }
+        }
+    },
 }

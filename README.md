@@ -8,8 +8,10 @@
 ## Installation
 ### Set up.
 1. `composer require metrique/laravel-cdnify`
-2. Add `Metrique\CDNify\CDNifyServiceProvider::class` to the list of *Autoloaded Service Providers* in `config/app.php`.
-3. Add `'CDNify'=>Metrique\CDNify\CDNifyFacade::class` to the list of *Class Aliases* in `config/app.php`. *(Optional)*
+2. Optionally add `Metrique\CDNify\CDNifyServiceProvider::class` to the list of *Autoloaded Service Providers* in `config/app.php`.
+3. Optionally add `'CDNify'=>Metrique\CDNify\CDNifyFacade::class` to the list of *Class Aliases* in `config/app.php`.
+
+CDNify supports Laravel Package Discovery and so steps 2 and 3 are optional.
 
 ### Config.
 Config defaults can be configured by editing `config/cdnify.php` in your main application directory.
