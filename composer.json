@@ -1,5 +1,5 @@
 {
-    "name": "digitalTown/laravel-cdnify",
+    "name": "digitalTown/lib-laravel-cdnify",
     "description": "Add a CDN to any path when a specified environment is active.",
     "type": "Library",
     "license": "MIT",
