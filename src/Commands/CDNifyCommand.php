@@ -153,7 +153,7 @@ class CDNifyCommand extends Command
 
         $this->info($job);
 
-        return $this->confirm('Do you wish to continue?');
+        return $this->confirm('Do you wish to continue?', true);
     }
     /**
      * Loads defaults from the config file.
