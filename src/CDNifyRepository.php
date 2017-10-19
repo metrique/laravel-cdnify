@@ -29,11 +29,11 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         $this->cdn = array_values(config('cdnify.cdn', []));
         $this->renameQueryStrings = config('cdnify.rename_query_strings', true);
         $this->roundRobinLength = count($this->cdn);
-        
+
         $this->mix(config('cdnify.mix', false));
         $this->environments(config('cdnify.environments', []));
         $this->roundRobin(config('cdnify.round_robin'));
-        
+
         return $this;
     }
 
@@ -47,20 +47,24 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             'environments' => $this->environments,
             'roundRobin' => $this->roundRobin,
         ]);
-        
+
         $params = $resets->merge($params)->only($resets->keys()->all());
-        
+
         $params->each(function ($item, $key) {
             $this->{$key}($item);
         });
 
-        $path = $this->path($path)->toString();
-        
+        $pathCDN = $this->path($path)->toString();
+
         $resets->each(function ($item, $key) {
             $this->{$key}($item);
         });
 
-        return $path;
+        if (env('APP_ENV') == 'local') {
+            return $path;
+        } else {
+            return $this->cdn().$pathCDN;
+        }
     }
 
     /**
@@ -73,13 +77,13 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         if ($path === false) {
             return false;
         }
-        
+
         if ($this->mix === true) {
             $path = $this->renameQueryString(
                 $this->mixOrElixir($this->path)
             );
         }
-        
+
         if (in_array(env('APP_ENV'), $this->environments)) {
             return $this->cdn().$path;
         }
@@ -148,7 +152,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
 
         return $this;
     }
-    
+
     /**
      * {@inheritdoc}
      * @param  [type] $path   [description]
@@ -160,38 +164,38 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         if (!$this->renameQueryStrings) {
             return $path;
         }
-        
+
         // Parth query string
         $parsed_path = parse_url($path);
-        
+
         if (!$parsed_path) {
             return $path;
         }
-        
+
         // Extract query hash from query string
         parse_str($parsed_path['query'], $query);
         $hash = $query[$params['key']] ?? null;
-        
+
         if (!empty($hash)) {
             $hash = $params['separator'].$hash;
         }
-        
+
         // Insert hash before extension.
         $path = pathinfo($parsed_path['path']);
-        
+
         return sprintf('%s/%s%s.%s', $path['dirname'], $path['filename'], $hash, $path['extension']);
     }
-    
+
     protected function mixOrElixir($path)
     {
         if (function_exists('mix')) {
             return mix($path);
         }
-        
+
         if (function_exists('elixir')) {
             return elixir($path);
         }
-        
+
         return $path;
     }
 }
