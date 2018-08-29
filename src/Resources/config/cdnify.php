@@ -26,6 +26,7 @@ return [
     |
     */
     'mix' => true,
+    'prefer_elixir' => false,
     'rename_query_strings' => true,
 
     /*
