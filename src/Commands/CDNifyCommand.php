@@ -127,7 +127,12 @@ class CDNifyCommand extends Command
                 // 3. Upload the files.
                 $this->upload();
             } catch (\Exception $e) {
-                $this->error('Encountered an unknown error processing this request, please try again.');
+                $this->error(
+                    'Encountered an error processing this request, please fix and try again.'
+                );
+                $this->error(
+                    $e->getMessage()
+                );
             }
         }
 
