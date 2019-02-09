@@ -21,7 +21,7 @@ class CDNifyCommand extends Command
         'skipped' => 0,
         'uploaded' => 0,
     ];
-    
+
     /**
      * The console command name.
      *
@@ -51,17 +51,6 @@ class CDNifyCommand extends Command
     protected $disk = 's3';
 
     /**
-     * List of valid disk drivers.
-     *
-     * @var array
-     */
-    protected $validDisks = [
-        'local',
-        's3',
-        'rackspace',
-    ];
-
-    /**
      * The build source path.
      *
      * @var string
@@ -88,7 +77,7 @@ class CDNifyCommand extends Command
      * @var array
      */
     protected $manifest;
-    
+
     /**
      * Detailed output
      *
@@ -193,11 +182,6 @@ class CDNifyCommand extends Command
             $this->disk = $this->option('disk');
         }
 
-        if (!in_array($this->disk, $this->validDisks)) {
-            $this->error('Disk not supported.');
-            throw new \Exception('Disk not supported, aborting!', 1);
-        }
-
         // Force
         if (is_bool($this->option('force'))) {
             $this->force = $this->option('force');
@@ -212,7 +196,7 @@ class CDNifyCommand extends Command
         if (is_string($this->option('manifest'))) {
             $this->manifest = $this->option('manifest');
         }
-        
+
         // Detail
         if (is_bool($this->option('detail'))) {
             $this->detail = $this->option('detail');
@@ -227,11 +211,11 @@ class CDNifyCommand extends Command
         if ($this->skip_build) {
             return false;
         }
-        
+
         if (function_exists('mix')) {
             return $this->system('npm run production');
         }
-        
+
         if (function_exists('elixir')) {
             return $this->system('gulp --production');
         }
@@ -261,15 +245,15 @@ class CDNifyCommand extends Command
         array_walk($this->manifest, function ($asset) {
             $src = sprintf('%s%s/%s', public_path(), $this->build_source, parse_url($asset)['path']);
             $src = str_replace('//', '/', $src);
-            
+
             $dest = sprintf('%s/%s', $this->build_dest, $this->cdnify->renameQueryString($asset));
             $dest = str_replace('//', '/', $dest);
-                        
+
             // Does the file exist locally?
             if (!file_exists($src)) {
                 $this->_comment(sprintf('Skipping. Local file doesn\'t exist. (%s)', $src));
                 $this->counts['skipped']++;
-                
+
                 return $asset;
             }
 
@@ -280,7 +264,7 @@ class CDNifyCommand extends Command
             if ($storage->exists($dest) && $this->force == false) {
                 $this->_comment(sprintf('Skipping. Asset exists on %s. (%s)', $this->disk, $dest));
                 $this->counts['skipped']++;
-                
+
                 return $asset;
             }
 
@@ -291,14 +275,14 @@ class CDNifyCommand extends Command
                 $this->_error('Fail...');
                 throw new \Exception('Sending asset failed, aborting!', 1);
             }
-            
+
             $this->counts['uploaded']++;
-            
+
             if ($this->detail) {
                 $this->_info('Success...');
             }
         });
-        
+
         $this->newline();
         $this->info(sprintf('Asset upload to %s completed.', $this->disk));
         $this->comment(sprintf('%d files uploaded', $this->counts['uploaded']));
@@ -351,21 +335,21 @@ class CDNifyCommand extends Command
     {
         $this->info('');
     }
-    
+
     private function _info($string, $verbosity = null)
     {
         if ($this->detail) {
             return $this->info($string);
         }
     }
-    
+
     private function _comment($string, $verbosity = null)
     {
         if ($this->detail) {
             return $this->comment($string);
         }
     }
-    
+
     private function _error($string, $verbosity = null)
     {
         if ($this->detail) {
