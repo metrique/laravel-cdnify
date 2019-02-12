@@ -165,7 +165,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         $pathinfo = pathinfo($parsed_path['path']);
 
         if (!$parsed_path) {
-            return $path;
+            return $parsed_path['path'];
         }
 
         // Check if file is in extension whitelist
@@ -181,8 +181,8 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             return $carry;
         }, true);
 
-        if ($inExtensionWhitelist) {
-            return $path;
+        if (!$inExtensionWhitelist) {
+            return $parsed_path['path'];
         }
 
         // Extract query hash from query string
@@ -201,6 +201,10 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             $hash,
             $pathinfo['extension']
         );
+    }
+
+    protected function removeQueryString($path)
+    {
     }
 
     protected function mixOrElixir($path)
