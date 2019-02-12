@@ -28,6 +28,7 @@ return [
     'mix' => true,
     'prefer_elixir' => false,
     'rename_query_strings' => true,
+    'rename_extension_whitelist' => ['woff2', 'woff', 'ttf'],
 
     /*
     |--------------------------------------------------------------------------

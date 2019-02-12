@@ -161,10 +161,27 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             return $path;
         }
 
-        // Parth query string
         $parsed_path = parse_url($path);
+        $pathinfo = pathinfo($parsed_path['path']);
 
         if (!$parsed_path) {
+            return $path;
+        }
+
+        // Check if file is in extension whitelist
+        $inExtensionWhitelist = collect(
+            config('cdnify.rename_extension_whitelist', [])
+        )->reduce(function ($carry, $item) use ($pathinfo) {
+            if ($carry) {
+                if ($pathinfo['extension'] == $item) {
+                    $carry = false;
+                }
+            }
+
+            return $carry;
+        }, true);
+
+        if ($inExtensionWhitelist) {
             return $path;
         }
 
@@ -177,9 +194,13 @@ class CDNifyRepository implements CDNifyRepositoryInterface
         }
 
         // Insert hash before extension.
-        $path = pathinfo($parsed_path['path']);
-
-        return sprintf('%s/%s%s.%s', $path['dirname'], $path['filename'], $hash, $path['extension']);
+        return sprintf(
+            '%s/%s%s.%s',
+            $pathinfo['dirname'],
+            $pathinfo['filename'],
+            $hash,
+            $pathinfo['extension']
+        );
     }
 
     protected function mixOrElixir($path)
