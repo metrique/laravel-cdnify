@@ -168,20 +168,18 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             return $parsed_path['path'];
         }
 
-        // Check if file is in extension whitelist
-        $inExtensionWhitelist = collect(
-            config('cdnify.rename_extension_whitelist', [])
+        // Check if file is in whitelist
+        $isInWhitelist = collect(
+            config('cdnify.rename_whitelist', [])
         )->reduce(function ($carry, $item) use ($pathinfo) {
             if ($carry) {
-                if ($pathinfo['extension'] == $item) {
-                    $carry = false;
-                }
+                return $carry;
             }
 
-            return $carry;
-        }, true);
+            return $pathinfo['basename'] == $item;
+        }, false);
 
-        if (!$inExtensionWhitelist) {
+        if ($isInWhitelist) {
             return $parsed_path['path'];
         }
 
@@ -201,10 +199,6 @@ class CDNifyRepository implements CDNifyRepositoryInterface
             $hash,
             $pathinfo['extension']
         );
-    }
-
-    protected function removeQueryString($path)
-    {
     }
 
     protected function mixOrElixir($path)
