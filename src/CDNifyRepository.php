@@ -203,7 +203,7 @@ class CDNifyRepository implements CDNifyRepositoryInterface
 
     protected function mixOrElixir($path)
     {
-        if (config('prefer_elixir', false)) {
+        if (config('cdnify.prefer_elixir', false)) {
             if (function_exists('elixir')) {
                 return elixir($path);
             }
