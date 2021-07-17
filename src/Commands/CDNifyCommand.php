@@ -331,7 +331,7 @@ class CDNifyCommand extends Command
     /**
      * Helper method to make new lines, and comments look pretty!
      */
-    private function newline()
+    public function newline()
     {
         $this->info('');
     }
