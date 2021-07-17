@@ -102,7 +102,7 @@ class CDNifyCommand extends Command
         $this->setDefaults();
         $this->setOptions();
 
-        $this->newline();
+        $this->br();
         $this->comment('metrique/laravel-cdnify');
 
         if ($this->confirmJob()) {
@@ -125,7 +125,7 @@ class CDNifyCommand extends Command
             }
         }
 
-        $this->newline();
+        $this->br();
         $this->info("Finished...");
     }
 
@@ -283,7 +283,7 @@ class CDNifyCommand extends Command
             }
         });
 
-        $this->newline();
+        $this->br();
         $this->info(sprintf('Asset upload to %s completed.', $this->disk));
         $this->comment(sprintf('%d files uploaded', $this->counts['uploaded']));
         $this->comment(sprintf('%d files skipped', $this->counts['skipped']));
@@ -331,7 +331,7 @@ class CDNifyCommand extends Command
     /**
      * Helper method to make new lines, and comments look pretty!
      */
-    public function newline()
+    public function br()
     {
         $this->info('');
     }
